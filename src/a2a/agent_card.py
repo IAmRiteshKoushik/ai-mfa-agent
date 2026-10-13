@@ -2,10 +2,10 @@
 
 from a2a.types import AgentCapabilities, AgentCard, AgentInterface, AgentSkill
 
-from src.config import AppConfig
+from src.config.agent_skill import AgentSkillConfig
 
 
-def build_agent_card() -> AgentCard:
+def build_agent_card(public_url: str, skill_config: AgentSkillConfig) -> AgentCard:
     return AgentCard(
         name="MFA Agent",
         description=(
@@ -16,7 +16,7 @@ def build_agent_card() -> AgentCard:
         version="0.1.0",
         supported_interfaces=[
             AgentInterface(
-                url=AppConfig.from_env().a2a_public_url,
+                url=public_url,
                 protocol_binding="JSONRPC",
                 protocol_version="1.0",
             )
@@ -26,14 +26,10 @@ def build_agent_card() -> AgentCard:
         default_output_modes=["text"],
         skills=[
             AgentSkill(
-                id="mfa-verification",
-                name="MFA Verification",
-                description=(
-                    "Authenticate a user via multi-factor authentication. "
-                    "Supports sequential password and OTP verification. "
-                    "Requires a transaction_id to begin the authentication flow."
-                ),
-                tags=["authentication", "mfa", "security", "password", "otp"],
+                id=skill_config.id,
+                name=skill_config.name,
+                description=skill_config.description,
+                tags=list(skill_config.tags),
             )
         ],
     )

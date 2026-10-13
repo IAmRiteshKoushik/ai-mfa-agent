@@ -20,6 +20,8 @@ class AerospikeConfig:
     host: str = "127.0.0.1"
     port: int = 3000
     namespace: str = "test"
+    agent_skill_set: str = "agent_skills"
+    agent_skill_key: str = "mfa-verification"
 
     @classmethod
     def from_env(cls) -> "AerospikeConfig":
@@ -28,4 +30,6 @@ class AerospikeConfig:
             host=os.getenv("AEROSPIKE_HOST", "127.0.0.1"),
             port=int(os.getenv("AEROSPIKE_PORT", "3000")),
             namespace=os.getenv("AEROSPIKE_NAMESPACE", "test"),
+            agent_skill_set=os.getenv("AEROSPIKE_AGENT_SKILL_SET", "agent_skills"),
+            agent_skill_key=os.getenv("AEROSPIKE_AGENT_SKILL_KEY", "mfa-verification"),
         )

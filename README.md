@@ -25,6 +25,25 @@ authentication options can be added there as the deployment settings are
 defined. Set `A2A_PUBLIC_URL` to the externally reachable JSON-RPC endpoint
 that peers should use. Its default is `http://localhost:8000/`.
 
+At startup, the service reads the Agent Card skill from Aerospike. The record
+uses namespace `AEROSPIKE_NAMESPACE`, set `AEROSPIKE_AGENT_SKILL_SET` (default
+`agent_skills`), and key `AEROSPIKE_AGENT_SKILL_KEY` (default
+`mfa-verification`). It must contain string bins `id`, `name`, and
+`description`, plus a list of non-empty string values in `tags`. For example,
+the record with the default location can be created with Aerospike's AQL:
+
+```sql
+INSERT INTO test.agent_skills (PK, id, name, description, tags)
+VALUES ('mfa-verification', 'mfa-verification', 'MFA Verification',
+        'Authenticate a user via password and OTP verification.',
+        ['authentication', 'mfa', 'security', 'password', 'otp'])
+```
+
+Change the namespace, set, and key in the statement to match the configured
+values. Startup fails with a validation error if the record is missing or its
+bins do not match this shape. `AgentSkillConfig` provides the typed application
+representation before conversion to the A2A SDK's `AgentSkill`.
+
 ## A2A interface
 
 - `GET /.well-known/agent-card.json` publishes the Agent Card.

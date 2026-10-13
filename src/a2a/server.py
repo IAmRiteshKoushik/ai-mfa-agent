@@ -18,24 +18,34 @@ def create_app() -> Starlette:
     @asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
         async with prepare() as prepared:
+            card = build_agent_card(prepared.a2a_public_url, prepared.agent_skill)
+            handler = DefaultRequestHandler(
+                agent_executor=LangGraphExecutor(lambda: app.state.graph),
+                task_store=InMemoryTaskStore(),
+                agent_card=card,
+                validate_input_modes=True,
+            )
             app.state.graph = prepared.graph
             app.state.mcp = prepared.mcp
+            app.state.agent_card = card
+            app.state.request_handler = handler
+            runtime_routes = [
+                *create_agent_card_routes(card),
+                *create_jsonrpc_routes(handler, "/"),
+            ]
+            app.routes.extend(runtime_routes)
             try:
                 yield
             finally:
+                app.routes = [
+                    route for route in app.routes if route not in runtime_routes
+                ]
                 del app.state.graph
                 del app.state.mcp
+                del app.state.agent_card
+                del app.state.request_handler
 
     app = Starlette(lifespan=lifespan)
-    card = build_agent_card()
-    handler = DefaultRequestHandler(
-        agent_executor=LangGraphExecutor(lambda: app.state.graph),
-        task_store=InMemoryTaskStore(),
-        agent_card=card,
-        validate_input_modes=True,
-    )
-    app.routes.extend(create_agent_card_routes(card))
-    app.routes.extend(create_jsonrpc_routes(handler, "/"))
     return app
 
 

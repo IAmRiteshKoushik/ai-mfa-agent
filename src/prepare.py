@@ -6,11 +6,15 @@ from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
+import aerospike
 from langgraph.checkpoint.aerospike import AerospikeSaver
+from langgraph.graph.state import CompiledStateGraph
 
 from src.config import AppConfig
+from src.config.agent_skill import AgentSkillConfig
 from src.graphs.agent import build_graph
 from src.infra.aerospike import open_aerospike_client
+from src.infra.agent_skill import load_agent_skill
 from src.mcp import MCPClientManager
 from src.mcp.config import MCPServerConfig
 
@@ -21,8 +25,10 @@ logger = logging.getLogger(__name__)
 class PreparedApplication:
     """Resources that remain available for the application's lifetime."""
 
-    graph: object
+    graph: CompiledStateGraph
     mcp: MCPClientManager
+    agent_skill: AgentSkillConfig
+    a2a_public_url: str
 
 
 async def _connect_mcp_servers(
@@ -37,7 +43,10 @@ async def _connect_mcp_servers(
     return mcp
 
 
-def _connect_aerospike(stack: AsyncExitStack, config: AppConfig):
+def _connect_aerospike(
+    stack: AsyncExitStack,
+    config: AppConfig,
+) -> aerospike.Client:
     client = stack.enter_context(open_aerospike_client(config.aerospike))
     logger.info(
         "Connected to Aerospike at %s:%d (environment=%s)",
@@ -48,7 +57,10 @@ def _connect_aerospike(stack: AsyncExitStack, config: AppConfig):
     return client
 
 
-def _build_graph(client, config: AppConfig):
+def _build_graph(
+    client: aerospike.Client,
+    config: AppConfig,
+) -> CompiledStateGraph:
     checkpointer = AerospikeSaver(client=client, namespace=config.aerospike.namespace)
     graph = build_graph(checkpointer)
     logger.info("LangGraph initialized with Aerospike checkpointer")
@@ -65,7 +77,14 @@ async def prepare(env_file: str | Path = ".env") -> AsyncIterator[PreparedApplic
             mcp = await _connect_mcp_servers(stack, config.mcp.load_servers())
             client = _connect_aerospike(stack, config)
             graph = _build_graph(client, config)
-            yield PreparedApplication(graph=graph, mcp=mcp)
+            agent_skill = load_agent_skill(client, config.aerospike)
+            logger.info("Loaded Agent Card skill '%s' from Aerospike", agent_skill.id)
+            yield PreparedApplication(
+                graph=graph,
+                mcp=mcp,
+                agent_skill=agent_skill,
+                a2a_public_url=config.a2a_public_url,
+            )
 
     except Exception:
         logger.exception("Application preparation or shutdown failed")
