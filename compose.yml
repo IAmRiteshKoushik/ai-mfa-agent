@@ -1,0 +1,5 @@
+services:
+  aerospike:
+    image: container.aerospike.com/aerospike/aerospike-server
+    ports:
+      - "3000:3000"

@@ -1,0 +1,37 @@
+[project]
+name = "ai-mfa-agent"
+version = "0.1.0"
+description = "LangGraph agent scaffold with Aerospike checkpointing and A2A communication"
+readme = "README.md"
+authors = [
+    { name = "IAmRiteshKoushik", email = "riteshkoushik39@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "a2a-sdk[http-server]>=1.2.2",
+    "aerospike>=19.3.0",
+    "httpx>=0.28.1",
+    "langgraph>=1.2.15",
+    "langgraph-checkpoint-aerospike>=0.3.0",
+    "mcp>=2.3.0",
+    "pyyaml>=6.0.3",
+    "starlette>=1.7.0",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+ai-mfa-probe-agent = "src.prober.server:main"
+ai-mfa-probe-journey = "src.prober.client:main"
+
+[build-system]
+requires = ["uv_build>=0.11.2,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "src"
+module-root = ""
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.0",
+]

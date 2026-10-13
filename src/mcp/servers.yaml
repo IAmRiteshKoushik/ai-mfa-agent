@@ -1,0 +1,5 @@
+servers:
+  - name: weather
+    url: https://weather.example.com/mcp
+  - name: internal-tools
+    url: http://localhost:8080/mcp
