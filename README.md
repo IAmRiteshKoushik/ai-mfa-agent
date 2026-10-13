@@ -44,24 +44,16 @@ values. Startup fails with a validation error if the record is missing or its
 bins do not match this shape. `AgentSkillConfig` provides the typed application
 representation before conversion to the A2A SDK's `AgentSkill`.
 
-Use the insertion script to create the configured skill record without
-replacing an existing record:
+The raw AQL statement is in `scripts/insert_skill.txt`. Run it with `aql` to
+create the default skill record:
 
 ```sh
-uv run python -m scripts.insert_skill \
-  --id mfa-verification \
-  --name "MFA Verification" \
-  --description "Authenticate a user via password and OTP verification." \
-  --tag authentication \
-  --tag mfa \
-  --tag security \
-  --tag password \
-  --tag otp
+aql -f scripts/insert_skill.txt
 ```
 
-Aerospike connection details, namespace, set, and default key come from the
-same environment variables as the service. Pass `--key` to target a different
-record key.
+Update the namespace, set, and key in the statement if your service uses
+different `AEROSPIKE_NAMESPACE`, `AEROSPIKE_AGENT_SKILL_SET`, or
+`AEROSPIKE_AGENT_SKILL_KEY` values.
 
 ## A2A interface
 

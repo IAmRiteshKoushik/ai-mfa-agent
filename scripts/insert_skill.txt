@@ -1,0 +1,4 @@
+INSERT INTO test.agent_skills (PK, id, name, description, tags)
+VALUES ('mfa-verification', 'mfa-verification', 'MFA Verification',
+        'Authenticate a user via password and OTP verification.',
+        ['authentication', 'mfa', 'security', 'password', 'otp'])
