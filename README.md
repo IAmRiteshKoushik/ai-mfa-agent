@@ -44,6 +44,25 @@ values. Startup fails with a validation error if the record is missing or its
 bins do not match this shape. `AgentSkillConfig` provides the typed application
 representation before conversion to the A2A SDK's `AgentSkill`.
 
+Use the insertion script to create the configured skill record without
+replacing an existing record:
+
+```sh
+uv run python -m scripts.insert_skill \
+  --id mfa-verification \
+  --name "MFA Verification" \
+  --description "Authenticate a user via password and OTP verification." \
+  --tag authentication \
+  --tag mfa \
+  --tag security \
+  --tag password \
+  --tag otp
+```
+
+Aerospike connection details, namespace, set, and default key come from the
+same environment variables as the service. Pass `--key` to target a different
+record key.
+
 ## A2A interface
 
 - `GET /.well-known/agent-card.json` publishes the Agent Card.
