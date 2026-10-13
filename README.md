@@ -8,7 +8,7 @@ Python 3.13 A2A service managed by uv, using LangGraph and Aerospike checkpoints
 ```sh
 uv sync
 docker compose up -d
-uv run --env-file .env uvicorn src.a2a.server:create_app --factory --host 0.0.0.0 --port 8000
+uv run agent
 ```
 
 Wait for Aerospike to accept connections before starting the service. Startup
@@ -46,15 +46,16 @@ The graph uses the A2A `context_id` as its Aerospike checkpoint thread ID. That
 ID identifies the run and remains separate from the reusable journey definition
 and the user whose journey is being handled.
 
-Run the prober client against the agent with:
+Start the interactive prober against the agent with:
 
 ```sh
-uv run ai-mfa-probe-journey --user-id user-123 --journey-id mfa-login
+uv run probe
 ```
 
-Set `MFA_AGENT_URL` or pass `--url` to target a different agent endpoint. The
-`src.prober.server` app remains available as a controllable A2A peer for
-protocol probes.
+Type a message and press Enter to send it over A2A. The response appears in the
+REPL; use Ctrl-D or Ctrl-C to exit. Set `MFA_AGENT_URL` to target a different
+agent endpoint. The `src.prober.server` app remains available as a controllable
+A2A peer for protocol probes.
 
 The service returns immediate A2A messages. Streaming and push notifications
 are disabled in the card. The SDK's in-memory task store satisfies its handler

@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "LangGraph agent scaffold with Aerospike checkpointing and A2A communication"
 readme = "README.md"
 authors = [
-    { name = "IAmRiteshKoushik", email = "riteshkoushik39@gmail.com" }
+    { name = "Ritesh Koushik", email = "npirte35" }
 ]
 requires-python = ">=3.13"
 dependencies = [
@@ -20,8 +20,8 @@ dependencies = [
 ]
 
 [project.scripts]
-ai-mfa-probe-agent = "src.prober.server:main"
-ai-mfa-probe-journey = "src.prober.client:main"
+agent = "src.a2a.server:main"
+probe = "src.prober.client:main"
 
 [build-system]
 requires = ["uv_build>=0.11.2,<0.12.0"]

@@ -1,5 +1,6 @@
 """ASGI application factory for the A2A service."""
 
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -36,3 +37,14 @@ def create_app() -> Starlette:
     app.routes.extend(create_agent_card_routes(card))
     app.routes.extend(create_jsonrpc_routes(handler, "/"))
     return app
+
+
+def main() -> None:
+    import uvicorn
+
+    uvicorn.run(
+        "src.a2a.server:create_app",
+        factory=True,
+        host=os.getenv("A2A_HOST", "0.0.0.0"),
+        port=int(os.getenv("A2A_PORT", "8000")),
+    )
