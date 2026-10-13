@@ -10,14 +10,19 @@ from a2a.types import StreamResponse, TaskState
 
 from src.a2a.peer import send_mfa_journey
 
-JOURNEY_IDS = ("mfa-login", "mfa-recovery")
+JOURNEY_IDS = (
+    "subgraph_otp",
+    "subgraph_mpin",
+    "subgraph_split_otp",
+    "subgraph_nb_password",
+)
 
 
 def greet() -> str:
     return (
         "👋 Hello! I am the Root Agent.\n"
         "I can help with general requests and route MFA journeys.\n"
-        "To start one, say something like 'Authenticate with mfa-login'."
+        "To start one, say something like 'Authenticate with subgraph_otp'."
     )
 
 
@@ -127,7 +132,7 @@ async def _repl(url: str) -> None:
                 response = (
                     f"{greet()}\n\nYou said: '{message}'. "
                     "If you need an MFA journey, include a user ID and journey ID, "
-                    "such as 'Authenticate user-123 with mfa-login'."
+                    "such as 'Authenticate user-123 with subgraph_otp'."
                 )
             print(f"agent> {response}")
         except (A2AClientError, AgentCardResolutionError, httpx.HTTPError) as exc:
