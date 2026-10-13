@@ -66,13 +66,12 @@ curl http://localhost:8000/.well-known/agent-card.json
 
 The Agent Card advertises JSON input and text output for the `mfa-journey`
 skill. Send one A2A data part containing string fields `user_id` and
-`journey_id`. It can be one name or a list of names from the hardcoded registry:
-`subgraph_otp`, `subgraph_mpin`, `subgraph_split_otp`, and
-`subgraph_nb_password`. Unknown names and missing or empty fields receive an
-A2A invalid-params error before graph execution. The decision node routes to
-each selected journey node, which prints its name and performs no MFA action.
-The selected paths converge on an end node, which logs and returns
-`MFA journey completed` over A2A.
+`journey_id`. It must be one string ID configured in `JOURNEY_SUBGRAPHS` in
+`src/graphs/journeys.py`. Each ID maps to one or more subgraph names. Unknown
+IDs and missing or empty fields receive an A2A invalid-params error before
+graph execution. The decision node routes to each configured journey node,
+which prints its name and performs no MFA action. The selected paths converge
+on an end node, which logs and returns `MFA journey completed` over A2A.
 
 The graph uses the A2A `context_id` as its Aerospike checkpoint thread ID. That
 ID identifies the run and remains separate from the reusable journey definition

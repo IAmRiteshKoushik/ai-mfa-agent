@@ -36,32 +36,21 @@ class LangGraphExecutor(AgentExecutor):
         journey_id = payload.get("journey_id")
         if not isinstance(user_id, str) or not user_id.strip():
             raise InvalidParamsError(message="A non-empty string user_id is required.")
-        if isinstance(journey_id, str):
-            journey_ids = [journey_id]
-        elif isinstance(journey_id, list) and all(
-            isinstance(value, str) for value in journey_id
-        ):
-            journey_ids = journey_id
-        else:
+        if not isinstance(journey_id, str):
             raise InvalidParamsError(
-                message="journey_id must be a journey name or a list of journey names."
+                message="A non-empty string journey_id is required."
             )
-        if not journey_ids or any(not value.strip() for value in journey_ids):
-            raise InvalidParamsError(
-                message="At least one non-empty journey_id is required."
-            )
-        unknown = set(journey_ids) - RECOGNIZED_JOURNEY_IDS
-        if unknown:
-            raise InvalidParamsError(
-                message=f"Unknown journey_id: {', '.join(sorted(unknown))}"
-            )
+        if not journey_id.strip():
+            raise InvalidParamsError(message="A non-empty string journey_id is required.")
+        if journey_id not in RECOGNIZED_JOURNEY_IDS:
+            raise InvalidParamsError(message=f"Unknown journey_id: {journey_id}")
         if not context.context_id:
             raise InvalidParamsError(message="A context ID is required.")
 
         # The Aerospike saver is synchronous. Keep database I/O off the event loop.
         result = await asyncio.to_thread(
             self.get_graph().invoke,
-            {"user_id": user_id, "journey_id": journey_ids},
+            {"user_id": user_id, "journey_id": journey_id},
             config={"configurable": {"thread_id": context.context_id}},
         )
         await event_queue.enqueue_event(

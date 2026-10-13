@@ -5,6 +5,6 @@ from typing import NotRequired, TypedDict
 
 class AgentState(TypedDict):
     user_id: str
-    journey_id: str | list[str]
+    journey_id: str
     selected_subgraphs: NotRequired[list[str]]
     output: NotRequired[str]
