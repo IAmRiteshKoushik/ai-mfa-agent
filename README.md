@@ -54,8 +54,7 @@ uv run probe
 
 Type a message and press Enter to send it over A2A. The response appears in the
 REPL; use Ctrl-D or Ctrl-C to exit. Set `MFA_AGENT_URL` to target a different
-agent endpoint. The `src.prober.server` app remains available as a controllable
-A2A peer for protocol probes.
+agent endpoint.
 
 The service returns immediate A2A messages. Streaming and push notifications
 are disabled in the card. The SDK's in-memory task store satisfies its handler
@@ -70,7 +69,7 @@ journey messaging.
 - `src/graphs/`: graph definitions and state.
 - `src/nodes/`: graph node implementations.
 - `src/a2a/`: ASGI service, Agent Card, executor, and outbound peer client.
-- `src/prober/`: controllable A2A peer for probes.
+- `src/prober/`: interactive A2A client REPL.
 - `src/infra/`: Aerospike checkpoint connection and cleanup.
 - `src/config/`: centralized application, Aerospike, and MCP configuration.
 - `src/utils/`: reserved for shared utilities.
@@ -83,8 +82,6 @@ shadow the official SDK's `a2a` package.
 already exported by the process) and assembles `AerospikeConfig` and
 `McpConfig` alongside application URLs. MCP server definitions are then read
 from the YAML path selected by `MCP_CONFIG_PATH`.
-
-Start the prober with `uv run uvicorn src.prober.server:app --port 8001`.
 
 ## MCP connections
 

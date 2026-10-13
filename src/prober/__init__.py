@@ -1,1 +1,1 @@
-"""Controllable peer agent for A2A probes."""
+"""Interactive A2A client REPL."""
